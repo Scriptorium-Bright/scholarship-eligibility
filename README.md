@@ -30,6 +30,7 @@
 - Phase 3.1: default source collector service와 notice 적재 integration test 추가
 - Phase 4.0: local raw storage와 raw HTML/attachment 저장 추가
 - Phase 4.1: raw HTML notice normalization과 canonical document 적재 추가
+- Phase 4.2: attachment PDF/HWP normalization과 canonical attachment document 적재 추가
 
 ## Quick Start
 ```bash
