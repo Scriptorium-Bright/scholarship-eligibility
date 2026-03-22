@@ -31,6 +31,8 @@
 - Phase 4.0: local raw storage와 raw HTML/attachment 저장 추가
 - Phase 4.1: raw HTML notice normalization과 canonical document 적재 추가
 - Phase 4.2: attachment PDF/HWP normalization과 canonical attachment document 적재 추가
+- Phase 5.0: heuristic scholarship rule extraction과 provenance 후보 생성 추가
+- Phase 5.1: scholarship rule/provenance persistence service 추가
 
 ## Quick Start
 ```bash
