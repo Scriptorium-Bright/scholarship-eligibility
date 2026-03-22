@@ -8,12 +8,22 @@ from app.schemas.domain import (
     ScholarshipNoticeUpsert,
     ScholarshipRuleCreate,
 )
+from app.schemas.search import (
+    OpenScholarshipListResponse,
+    ScholarshipProvenanceAnchorResponse,
+    ScholarshipSearchItem,
+    ScholarshipSearchResponse,
+)
 
 __all__ = [
     "CanonicalBlock",
     "CanonicalDocumentUpsert",
     "NoticeAttachmentUpsert",
+    "OpenScholarshipListResponse",
     "ProvenanceAnchorCreate",
+    "ScholarshipProvenanceAnchorResponse",
     "ScholarshipNoticeUpsert",
     "ScholarshipRuleCreate",
+    "ScholarshipSearchItem",
+    "ScholarshipSearchResponse",
 ]

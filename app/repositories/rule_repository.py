@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import List, Optional
 
 from sqlalchemy import delete, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
-from app.models import RuleStatus, ScholarshipRule
+from app.models import CanonicalDocument, RuleStatus, ScholarshipRule
 from app.schemas import ScholarshipRuleCreate
 
 
@@ -14,6 +14,20 @@ class ScholarshipRuleRepository:
 
     def __init__(self, session: Session):
         self.session = session
+
+    def _published_rule_statement(self):
+        """Build the default published-rule query with read-path relations preloaded."""
+
+        return (
+            select(ScholarshipRule)
+            .where(ScholarshipRule.status == RuleStatus.PUBLISHED)
+            .options(selectinload(ScholarshipRule.notice))
+            .options(
+                selectinload(ScholarshipRule.document).selectinload(
+                    CanonicalDocument.provenance_anchors
+                )
+            )
+        )
 
     def replace_rules(
         self,
@@ -51,11 +65,7 @@ class ScholarshipRuleRepository:
     def list_published_rules(self, limit: Optional[int] = None) -> List[ScholarshipRule]:
         """Return published rules for future search and eligibility APIs."""
 
-        statement = (
-            select(ScholarshipRule)
-            .where(ScholarshipRule.status == RuleStatus.PUBLISHED)
-            .order_by(ScholarshipRule.id.asc())
-        )
+        statement = self._published_rule_statement().order_by(ScholarshipRule.id.asc())
         if limit is not None:
             statement = statement.limit(limit)
         return list(self.session.scalars(statement))
