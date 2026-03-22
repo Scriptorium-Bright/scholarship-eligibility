@@ -33,6 +33,8 @@
 - Phase 4.2: attachment PDF/HWP normalization과 canonical attachment document 적재 추가
 - Phase 5.0: heuristic scholarship rule extraction과 provenance 후보 생성 추가
 - Phase 5.1: scholarship rule/provenance persistence service 추가
+- Phase 6.0: scholarship search read model과 open scholarship query service 추가
+- Phase 6.1: `/api/v1/scholarships/search`, `/api/v1/scholarships/open` API 추가
 
 ## Quick Start
 ```bash
@@ -43,6 +45,8 @@ docker compose up --build
 기본 API:
 - `GET /health`
 - `GET /ready`
+- `GET /api/v1/scholarships/search?query=장학금`
+- `GET /api/v1/scholarships/open`
 
 ## Repository Layout
 ```text
