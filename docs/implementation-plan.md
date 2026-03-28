@@ -29,5 +29,5 @@
 - 9.x scheduler, demo, final docs
 
 ## Current Progress
-- completed: 1.0, 1.1, 1.2, 2.0, 2.1, 3.0, 3.1, 4.0, 4.1, 4.2, 5.0, 5.1, 6.0, 6.1, 7.0, 7.1, 8.0
-- next: 8.1 LLM structured output schema와 evidence contract
+- completed: 1.0, 1.1, 1.2, 2.0, 2.1, 3.0, 3.1, 4.0, 4.1, 4.2, 5.0, 5.1, 6.0, 6.1, 7.0, 7.1, 8.0, 8.1, 8.2
+- next: 8.3 OpenAI-compatible provider, fake provider, config
