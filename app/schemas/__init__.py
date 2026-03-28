@@ -15,6 +15,11 @@ from app.schemas.eligibility import (
     ScholarshipEligibilityResponse,
     StudentProfile,
 )
+from app.schemas.llm_extraction import (
+    LLMExtractionEvidence,
+    LLMExtractionQualification,
+    LLMExtractionResponse,
+)
 from app.schemas.search import (
     OpenScholarshipListResponse,
     ScholarshipProvenanceAnchorResponse,
@@ -27,6 +32,9 @@ __all__ = [
     "CanonicalDocumentUpsert",
     "EligibilityCheckRequest",
     "EligibilityConditionCheck",
+    "LLMExtractionEvidence",
+    "LLMExtractionQualification",
+    "LLMExtractionResponse",
     "NoticeAttachmentUpsert",
     "OpenScholarshipListResponse",
     "ProvenanceAnchorCreate",
