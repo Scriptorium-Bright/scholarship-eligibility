@@ -23,7 +23,7 @@ def test_phase4_notice_normalization_service_persists_canonical_document(monkeyp
 
     storage = LocalRawStorage(base_path=str(tmp_path / "raw"))
     fixture_map = {
-        "https://www.jbnu.ac.kr/web/news/notice/sub01.do": _load_fixture("jbnu_main_notice_list.html"),
+        JBNU_MAIN_NOTICE_SOURCE.list_url: _load_fixture("jbnu_main_notice_list.html"),
         "https://www.jbnu.ac.kr/web/news/notice/sub01.do?mode=view&articleNo=402100": _load_fixture(
             "jbnu_main_notice_detail.html"
         ),

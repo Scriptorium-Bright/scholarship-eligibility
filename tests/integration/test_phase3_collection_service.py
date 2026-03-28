@@ -20,7 +20,7 @@ def test_phase3_collection_service_collects_default_sources(monkeypatch, tmp_pat
     create_all_tables()
 
     fixture_map = {
-        "https://www.jbnu.ac.kr/web/news/notice/sub01.do": _load_fixture("jbnu_main_notice_list.html"),
+        DEFAULT_COLLECTOR_SOURCES[0].list_url: _load_fixture("jbnu_main_notice_list.html"),
         "https://www.jbnu.ac.kr/web/news/notice/sub01.do?mode=view&articleNo=402100": _load_fixture(
             "jbnu_main_notice_detail.html"
         ),
