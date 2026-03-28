@@ -5,6 +5,11 @@ from app.extractors.base import (
     ExtractedScholarshipRule,
     StructuredRuleExtractor,
 )
+from app.extractors.prompt_builder import (
+    ExtractionPromptBlock,
+    NoticeExtractionContext,
+    NoticeExtractionPromptBuilder,
+)
 from app.extractors.scholarship_rules import (
     HeuristicScholarshipRuleExtractor,
 )
@@ -12,6 +17,9 @@ from app.extractors.scholarship_rules import (
 __all__ = [
     "ExtractedProvenanceAnchor",
     "ExtractedScholarshipRule",
+    "ExtractionPromptBlock",
     "StructuredRuleExtractor",
     "HeuristicScholarshipRuleExtractor",
+    "NoticeExtractionContext",
+    "NoticeExtractionPromptBuilder",
 ]
