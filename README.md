@@ -180,6 +180,11 @@ pytest
 - `JBNU_API_PREFIX`
 - `JBNU_DATABASE_URL`
 - `JBNU_RAW_STORAGE_PATH`
+- `JBNU_EXTRACTOR_MODE`
+- `JBNU_LLM_PROVIDER`
+- `JBNU_LLM_TIMEOUT_SECONDS`
+- `JBNU_LLM_RETRY_ATTEMPTS`
+- `JBNU_LLM_MAX_CONTEXT_CHARACTERS`
 
 ## Current Implementation Status
 - Phase 1.x: 요구사항, 앱 골격, Docker Compose, PostgreSQL + pgvector 준비
@@ -194,6 +199,7 @@ pytest
 - Phase 8.2: extraction prompt/context builder
 - Phase 8.3: OpenAI-compatible provider, fake provider, config baseline
 - Phase 8.4: LLM extractor integration baseline
+- Phase 8.5: hybrid fallback, provider retry, extraction ops logging
 
 진행 이력은 [docs/implementation-plan.md](docs/implementation-plan.md)과 각 `docs/phase-n.x.md` 문서에 남겨두었다.
 
@@ -205,7 +211,7 @@ pytest
 
 ## Current Limits
 - search는 아직 semantic embedding 없이 lexical scoring 중심이다.
-- LLM structured extraction path는 baseline 통합까지 완료됐지만, hybrid fallback, retry, evaluation set은 아직 남아 있다.
+- LLM structured extraction path는 hybrid fallback과 retry까지 붙었지만, evaluation set과 benchmark 정리는 아직 남아 있다.
 - eligibility qualification schema는 현재 핵심 필드 중심이다.
 
 ## Repository Layout
@@ -226,4 +232,4 @@ gs/        job/application reference materials kept outside product scope
 - LLM extraction FAQ: [docs/llm-extraction-faq.md](docs/llm-extraction-faq.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
-- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.4.md](docs/phase-8.4.md)
+- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.5.md](docs/phase-8.5.md)

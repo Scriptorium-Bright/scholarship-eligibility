@@ -118,11 +118,72 @@ def test_phase8_openai_provider_rejects_invalid_structured_output():
     client.close()
 
 
+def test_phase8_openai_provider_retries_transient_request_error():
+    attempts = {"count": 0}
+    payload = {
+        "scholarship_name": "송은장학금",
+        "summary_text": "평점과 소득분위를 보는 장학금",
+        "qualification": {
+            "gpa_min": 3.2,
+            "income_bracket_max": 8,
+            "grade_levels": [2, 3],
+            "enrollment_status": ["재학생"],
+            "required_documents": ["장학금지원서"],
+        },
+        "evidence": [
+            {
+                "field_name": "qualification.gpa_min",
+                "document_id": 101,
+                "block_id": "block-1",
+                "page_number": 1,
+                "quote_text": "직전학기 평점평균 3.20 이상",
+            }
+        ],
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        attempts["count"] += 1
+        if attempts["count"] == 1:
+            raise httpx.ConnectError("temporary network failure", request=request)
+        return httpx.Response(
+            200,
+            json={
+                "choices": [
+                    {
+                        "message": {
+                            "content": json.dumps(payload, ensure_ascii=False),
+                        }
+                    }
+                ]
+            },
+        )
+
+    client = httpx.Client(
+        transport=httpx.MockTransport(handler),
+        base_url="https://llm.example.test/v1",
+    )
+    provider = OpenAICompatibleStructuredOutputProvider(
+        base_url="https://llm.example.test/v1",
+        model="test-model",
+        retry_attempts=2,
+        client=client,
+    )
+
+    response = provider.extract_rule(prompt_text="재시도 동작을 검증해줘")
+
+    assert response.scholarship_name == "송은장학금"
+    assert attempts["count"] == 2
+
+    provider.close()
+    client.close()
+
+
 def test_phase8_provider_factory_reads_settings(monkeypatch):
     monkeypatch.setenv("JBNU_EXTRACTOR_MODE", "llm")
     monkeypatch.setenv("JBNU_LLM_PROVIDER", "fake")
     monkeypatch.setenv("JBNU_LLM_MODEL", "test-model")
     monkeypatch.setenv("JBNU_LLM_TIMEOUT_SECONDS", "42")
+    monkeypatch.setenv("JBNU_LLM_RETRY_ATTEMPTS", "3")
     monkeypatch.setenv("JBNU_LLM_MAX_CONTEXT_CHARACTERS", "7000")
 
     settings = get_settings()
@@ -131,5 +192,6 @@ def test_phase8_provider_factory_reads_settings(monkeypatch):
     assert settings.extractor_mode == "llm"
     assert settings.llm_model == "test-model"
     assert settings.llm_timeout_seconds == 42
+    assert settings.llm_retry_attempts == 3
     assert settings.llm_max_context_characters == 7000
     assert isinstance(provider, FakeStructuredOutputProvider)
