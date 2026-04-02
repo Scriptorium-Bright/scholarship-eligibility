@@ -3,8 +3,15 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Dict, List, Optional
 
+from app.ai.providers import build_structured_output_provider
+from app.core.config import Settings, get_settings
 from app.db import session_scope
-from app.extractors import HeuristicScholarshipRuleExtractor, StructuredRuleExtractor
+from app.extractors import (
+    HeuristicScholarshipRuleExtractor,
+    LLMScholarshipRuleExtractor,
+    NoticeExtractionPromptBuilder,
+    StructuredRuleExtractor,
+)
 from app.repositories import CanonicalDocumentRepository, ScholarshipNoticeRepository, ScholarshipRuleRepository
 from app.schemas import ProvenanceAnchorCreate, ScholarshipRuleCreate
 
@@ -12,13 +19,18 @@ from app.schemas import ProvenanceAnchorCreate, ScholarshipRuleCreate
 class ScholarshipRuleExtractionService:
     """Extract structured scholarship rules and provenance from canonical documents."""
 
-    def __init__(self, extractor: Optional[StructuredRuleExtractor] = None):
+    def __init__(
+        self,
+        extractor: Optional[StructuredRuleExtractor] = None,
+        settings: Optional[Settings] = None,
+    ):
         """
         공용 structured extraction contract를 따르는 구현체를 주입받아 초기화합니다.
         phase 8부터는 heuristic extractor와 future LLM extractor가 같은 자리에서 교체됩니다.
         """
 
-        self._extractor = extractor or HeuristicScholarshipRuleExtractor()
+        self._settings = settings or get_settings()
+        self._extractor = extractor or self._build_default_extractor(self._settings)
 
     def extract_notice(self, notice_id: int):
         """
@@ -81,3 +93,19 @@ class ScholarshipRuleExtractionService:
                 document_repository.replace_anchors(document_id=document_id, anchors=anchors)
 
             return saved_rules
+
+    def _build_default_extractor(self, settings: Settings) -> StructuredRuleExtractor:
+        """Build the extractor implementation selected by application settings."""
+
+        if settings.extractor_mode == "heuristic":
+            return HeuristicScholarshipRuleExtractor()
+        if settings.extractor_mode == "llm":
+            return LLMScholarshipRuleExtractor(
+                provider=build_structured_output_provider(settings),
+                prompt_builder=NoticeExtractionPromptBuilder(
+                    max_characters=settings.llm_max_context_characters
+                ),
+            )
+        raise ValueError(
+            "Extractor mode is not supported in phase 8.4: {0}".format(settings.extractor_mode)
+        )
