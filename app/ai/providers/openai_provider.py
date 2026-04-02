@@ -24,6 +24,7 @@ class OpenAICompatibleStructuredOutputProvider:
         model: str,
         api_key: Optional[str] = None,
         timeout_seconds: float = 30.0,
+        retry_attempts: int = 2,
         client: Optional[httpx.Client] = None,
     ):
         """
@@ -34,27 +35,14 @@ class OpenAICompatibleStructuredOutputProvider:
         self._base_url = base_url.rstrip("/")
         self._model = model
         self._api_key = api_key
+        self._retry_attempts = max(retry_attempts, 1)
         self._client = client or httpx.Client(base_url=self._base_url, timeout=timeout_seconds)
         self._owns_client = client is None
 
     def extract_rule(self, *, prompt_text: str) -> LLMExtractionResponse:
         """프롬프트를 chat completion 엔드포인트로 보내고 JSON 응답을 검증합니다."""
 
-        try:
-            response = self._client.post(
-                "/chat/completions",
-                headers=self._build_headers(),
-                json=self._build_request_payload(prompt_text=prompt_text),
-            )
-            response.raise_for_status()
-        except httpx.HTTPStatusError as exc:
-            raise StructuredOutputProviderTransportError(
-                "Provider returned HTTP error: {0}".format(exc.response.status_code)
-            ) from exc
-        except httpx.RequestError as exc:
-            raise StructuredOutputProviderTransportError(
-                "Provider request failed: {0}".format(exc)
-            ) from exc
+        response = self._post_with_retry(prompt_text=prompt_text)
 
         try:
             response_json = response.json()
@@ -97,6 +85,49 @@ class OpenAICompatibleStructuredOutputProvider:
         if self._api_key:
             headers["Authorization"] = "Bearer {0}".format(self._api_key)
         return headers
+
+    def _post_with_retry(self, *, prompt_text: str) -> httpx.Response:
+        """
+        공급자 연결 실패나 재시도 가능한 HTTP 상태가 나오면 제한된 횟수만큼 다시 호출합니다.
+        phase 8.5에서는 복잡한 backoff 대신 네트워크 불안정과 일시적 5xx를 흡수하는 최소 정책만 둡니다.
+        """
+
+        last_exception: Optional[Exception] = None
+        for attempt in range(1, self._retry_attempts + 1):
+            try:
+                response = self._client.post(
+                    "/chat/completions",
+                    headers=self._build_headers(),
+                    json=self._build_request_payload(prompt_text=prompt_text),
+                )
+                response.raise_for_status()
+                return response
+            except httpx.HTTPStatusError as exc:
+                last_exception = exc
+                if attempt < self._retry_attempts and self._should_retry_status(
+                    exc.response.status_code
+                ):
+                    continue
+                raise StructuredOutputProviderTransportError(
+                    "Provider returned HTTP error: {0}".format(exc.response.status_code)
+                ) from exc
+            except httpx.RequestError as exc:
+                last_exception = exc
+                if attempt < self._retry_attempts:
+                    continue
+                raise StructuredOutputProviderTransportError(
+                    "Provider request failed: {0}".format(exc)
+                ) from exc
+
+        raise StructuredOutputProviderTransportError(
+            "Provider request failed after retries: {0}".format(last_exception)
+        )
+
+    @staticmethod
+    def _should_retry_status(status_code: int) -> bool:
+        """일시적 장애로 볼 수 있는 HTTP 상태만 재시도 대상으로 제한합니다."""
+
+        return status_code == 429 or status_code >= 500
 
     def _extract_message_payload(self, response_json: Dict[str, Any]) -> Dict[str, Any]:
         """chat completion 응답의 첫 assistant message에서 JSON 객체를 꺼냅니다."""

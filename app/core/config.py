@@ -1,6 +1,8 @@
 from functools import lru_cache
 from typing import Literal, Optional
 
+from pydantic import Field
+
 ExtractorMode = Literal["heuristic", "llm", "hybrid"]
 LLMProviderName = Literal["openai_compatible", "fake"]
 
@@ -24,6 +26,7 @@ class Settings(BaseSettings):
     llm_api_key: Optional[str] = None
     llm_model: str = "gpt-4.1-mini"
     llm_timeout_seconds: float = 30.0
+    llm_retry_attempts: int = Field(default=2, ge=1)
     llm_max_context_characters: int = 6000
 
     model_config = SettingsConfigDict(

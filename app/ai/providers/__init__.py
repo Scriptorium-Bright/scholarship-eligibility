@@ -27,6 +27,7 @@ def build_structured_output_provider(settings: Optional[Settings] = None) -> Str
             api_key=active_settings.llm_api_key,
             model=active_settings.llm_model,
             timeout_seconds=active_settings.llm_timeout_seconds,
+            retry_attempts=active_settings.llm_retry_attempts,
         )
     raise ValueError("Unsupported LLM provider: {0}".format(active_settings.llm_provider))
 
