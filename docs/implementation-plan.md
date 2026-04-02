@@ -29,5 +29,5 @@
 - 9.x scheduler, demo, final docs
 
 ## Current Progress
-- completed: 1.0, 1.1, 1.2, 2.0, 2.1, 3.0, 3.1, 4.0, 4.1, 4.2, 5.0, 5.1, 6.0, 6.1, 7.0, 7.1, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5
-- next: 8.6 evaluation set, benchmark, portfolio docs
+- completed: 1.0, 1.1, 1.2, 2.0, 2.1, 3.0, 3.1, 4.0, 4.1, 4.2, 5.0, 5.1, 6.0, 6.1, 7.0, 7.1, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
+- next: 9.x scheduler, demo, final docs

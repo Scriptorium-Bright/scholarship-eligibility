@@ -73,8 +73,9 @@
 - PDF/HWP/text attachment를 canonical document로 변환한다.
 
 ### 4. Rule Extraction
-- canonical document에서 장학 조건을 heuristic rule로 추출한다.
-- 추출된 값마다 provenance anchor를 만든다.
+- canonical document에서 장학 조건을 heuristic baseline 또는 LLM structured extraction으로 추출한다.
+- `hybrid` 모드에서는 LLM failure를 heuristic extractor로 fallback한다.
+- 추출된 값마다 provenance anchor를 만들고 extraction outcome log를 남긴다.
 
 ### 5. Search
 - published rule을 notice/provenance와 함께 읽어 search read model을 만든다.
@@ -200,6 +201,7 @@ pytest
 - Phase 8.3: OpenAI-compatible provider, fake provider, config baseline
 - Phase 8.4: LLM extractor integration baseline
 - Phase 8.5: hybrid fallback, provider retry, extraction ops logging
+- Phase 8.6: gold evaluation set, synthetic benchmark, portfolio metrics
 
 진행 이력은 [docs/implementation-plan.md](docs/implementation-plan.md)과 각 `docs/phase-n.x.md` 문서에 남겨두었다.
 
@@ -208,10 +210,21 @@ pytest
 - HTML/PDF/HWP를 같은 canonical document 계층으로 수렴시켰다.
 - search와 eligibility가 같은 structured rule 계층을 재사용한다.
 - provenance anchor를 통해 결과 근거를 추적할 수 있다.
+- heuristic baseline, LLM structured extraction, hybrid fallback을 같은 extractor contract 위에서 비교할 수 있다.
+
+## Measured Extraction Evaluation
+- synthetic gold set `4건` 기준
+- `heuristic`: success `100.00%`, field exact match `54.17%`, evidence coverage `57.14%`
+- `llm`: success `50.00%`, field exact match `50.00%`, evidence coverage `52.38%`
+- `hybrid`: success `100.00%`, field exact match `79.17%`, evidence coverage `80.95%`, fallback recovery `100.00%`
+- 핵심 해석:
+  - hybrid는 heuristic 대비 field exact match를 `25.00%p` 높였다.
+  - hybrid는 llm 단독 대비 success rate를 `50.00%p` 높였다.
+  - 이 수치는 local SQLite + fixture-driven fake provider 기준의 synthetic evaluation 결과다.
 
 ## Current Limits
 - search는 아직 semantic embedding 없이 lexical scoring 중심이다.
-- LLM structured extraction path는 hybrid fallback과 retry까지 붙었지만, evaluation set과 benchmark 정리는 아직 남아 있다.
+- extraction 평가는 synthetic gold set과 fake provider 기준이며, 실제 OpenAI provider 품질 측정은 아직 아니다.
 - eligibility qualification schema는 현재 핵심 필드 중심이다.
 
 ## Repository Layout
@@ -232,4 +245,4 @@ gs/        job/application reference materials kept outside product scope
 - LLM extraction FAQ: [docs/llm-extraction-faq.md](docs/llm-extraction-faq.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
-- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.5.md](docs/phase-8.5.md)
+- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.6.md](docs/phase-8.6.md)
