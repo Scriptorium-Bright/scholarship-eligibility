@@ -12,7 +12,7 @@ from app.schemas import CanonicalBlock, CanonicalDocumentUpsert
 
 
 class UnsupportedAttachmentError(ValueError):
-    """Raised when no extractor is available for the attachment payload."""
+    """첨부파일 payload를 처리할 추출기가 없을 때 발생하는 예외입니다."""
 
 
 def _clean_text(text: str) -> str:
@@ -25,7 +25,7 @@ def _clean_text(text: str) -> str:
 
 
 class PdfAttachmentTextExtractor:
-    """Extract text from PDF attachments using pypdf."""
+    """pypdf를 사용해 PDF 첨부에서 텍스트를 추출합니다."""
 
     def extract(self, raw_bytes: bytes) -> str:
         """
@@ -43,7 +43,7 @@ class PdfAttachmentTextExtractor:
 
 
 class HwpPreviewTextExtractor:
-    """Extract preview text from HWP attachments through the OLE `PrvText` stream."""
+    """HWP 첨부의 OLE `PrvText` 스트림에서 미리보기 텍스트를 추출합니다."""
 
     def extract(self, raw_bytes: bytes) -> str:
         """
@@ -67,7 +67,7 @@ class HwpPreviewTextExtractor:
 
 
 class PlainTextAttachmentTextExtractor:
-    """Decode text-like attachment bytes as UTF-8."""
+    """텍스트 계열 첨부파일 바이트를 UTF-8 문자열로 디코딩합니다."""
 
     def extract(self, raw_bytes: bytes) -> str:
         """
@@ -82,7 +82,7 @@ class PlainTextAttachmentTextExtractor:
 
 
 class AttachmentDocumentNormalizer:
-    """Convert raw attachment bytes into canonical document payloads."""
+    """원시 첨부파일 바이트를 canonical document payload로 변환합니다."""
 
     def __init__(
         self,

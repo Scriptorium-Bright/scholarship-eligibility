@@ -10,7 +10,7 @@ from app.core.time import now_in_seoul
 
 
 class TimestampMixin:
-    """Shared timestamp columns for entities that are updated over time."""
+    """시간에 따라 갱신되는 엔티티들이 공통으로 쓰는 timestamp 컬럼입니다."""
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -26,7 +26,7 @@ class TimestampMixin:
 
 
 class DocumentKind(str, Enum):
-    """Supported canonical document kinds for later normalization phases."""
+    """정규화 단계에서 지원하는 canonical document 종류입니다."""
 
     NOTICE_HTML = "notice_html"
     ATTACHMENT_PDF = "attachment_pdf"
@@ -34,7 +34,7 @@ class DocumentKind(str, Enum):
 
 
 class RuleStatus(str, Enum):
-    """Lifecycle states for extracted scholarship rules."""
+    """추출된 장학 규정이 가질 수 있는 생명주기 상태입니다."""
 
     DRAFT = "draft"
     PUBLISHED = "published"

@@ -10,9 +10,14 @@ from app.schemas import ScholarshipRuleCreate
 
 
 class ScholarshipRuleRepository:
-    """Persist and query structured scholarship rules."""
+    """구조화된 장학 규정을 저장하고 조회하는 repository입니다."""
 
     def __init__(self, session: Session):
+        """
+        구조화 규정과 published read path를 다루는 repository를 세션에 연결합니다.
+        extraction, search, eligibility가 같은 persistence 경계를 공유할 수 있게 합니다.
+        """
+
         self.session = session
 
     def _published_rule_statement(self, *, include_provenance_anchors: bool = True):

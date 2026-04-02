@@ -167,7 +167,7 @@ def _dedupe_summaries(summaries: Iterable[CollectedNoticeSummary]) -> List[Colle
 
 
 class JbnuMainNoticeListParser:
-    """Parse the JBNU main notice board list page."""
+    """전북대 본부 메인 공지 게시판 목록 페이지를 파싱합니다."""
 
     def parse(self, html: str, source: CollectorSource) -> List[CollectedNoticeSummary]:
         """
@@ -209,7 +209,7 @@ class JbnuMainNoticeListParser:
 
 
 class K2WebNoticeListParser:
-    """Parse K2Web-based department board list pages."""
+    """K2Web 기반 학과·부서 게시판 목록 페이지를 파싱합니다."""
 
     def parse(self, html: str, source: CollectorSource) -> List[CollectedNoticeSummary]:
         """
@@ -251,7 +251,7 @@ class K2WebNoticeListParser:
 
 
 class GenericNoticeDetailParser:
-    """Parse notice detail pages from the main board and K2Web pages."""
+    """메인 게시판과 K2Web 게시판의 공지 상세 페이지를 파싱합니다."""
 
     def parse(self, html: str, summary: CollectedNoticeSummary, source: CollectorSource) -> CollectedNotice:
         """

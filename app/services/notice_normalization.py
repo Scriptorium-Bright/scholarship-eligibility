@@ -9,7 +9,7 @@ from app.storage import LocalRawStorage
 
 
 class NoticeHtmlNormalizationService:
-    """Read stored raw HTML and persist canonical notice documents."""
+    """저장된 원시 HTML을 읽어 canonical notice 문서로 적재하는 서비스입니다."""
 
     def __init__(
         self,

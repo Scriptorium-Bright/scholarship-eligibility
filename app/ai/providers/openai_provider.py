@@ -15,7 +15,7 @@ from app.schemas import LLMExtractionResponse
 
 
 class OpenAICompatibleStructuredOutputProvider:
-    """Call an OpenAI-compatible chat completion endpoint and parse one JSON extraction payload."""
+    """OpenAI 호환 chat completion 엔드포인트를 호출해 JSON 추출 결과를 파싱합니다."""
 
     def __init__(
         self,
@@ -26,6 +26,11 @@ class OpenAICompatibleStructuredOutputProvider:
         timeout_seconds: float = 30.0,
         client: Optional[httpx.Client] = None,
     ):
+        """
+        OpenAI 호환 chat completion 엔드포인트를 호출할 최소 연결 정보를 초기화합니다.
+        테스트에서는 외부 네트워크 대신 주입된 httpx client를 그대로 재사용할 수 있게 둡니다.
+        """
+
         self._base_url = base_url.rstrip("/")
         self._model = model
         self._api_key = api_key
@@ -33,7 +38,7 @@ class OpenAICompatibleStructuredOutputProvider:
         self._owns_client = client is None
 
     def extract_rule(self, *, prompt_text: str) -> LLMExtractionResponse:
-        """Submit one prompt to a chat completion endpoint and validate the returned JSON payload."""
+        """프롬프트를 chat completion 엔드포인트로 보내고 JSON 응답을 검증합니다."""
 
         try:
             response = self._client.post(
@@ -61,13 +66,13 @@ class OpenAICompatibleStructuredOutputProvider:
             ) from exc
 
     def close(self) -> None:
-        """Close the owned HTTP client when the provider created it internally."""
+        """공급자가 내부에서 생성한 HTTP 클라이언트가 있으면 정리합니다."""
 
         if self._owns_client:
             self._client.close()
 
     def _build_request_payload(self, *, prompt_text: str) -> Dict[str, Any]:
-        """Build one OpenAI-compatible chat completion payload in JSON-only mode."""
+        """JSON 전용 모드의 OpenAI 호환 chat completion 요청 payload를 만듭니다."""
 
         return {
             "model": self._model,
@@ -86,7 +91,7 @@ class OpenAICompatibleStructuredOutputProvider:
         }
 
     def _build_headers(self) -> Dict[str, str]:
-        """Build provider headers, including bearer auth when an API key is available."""
+        """API key 존재 여부를 반영해 공급자 요청 헤더를 구성합니다."""
 
         headers = {"Content-Type": "application/json"}
         if self._api_key:
@@ -94,7 +99,7 @@ class OpenAICompatibleStructuredOutputProvider:
         return headers
 
     def _extract_message_payload(self, response_json: Dict[str, Any]) -> Dict[str, Any]:
-        """Read one JSON object from the first assistant message of a chat completion response."""
+        """chat completion 응답의 첫 assistant message에서 JSON 객체를 꺼냅니다."""
 
         choices = response_json["choices"]
         message = choices[0]["message"]
@@ -116,7 +121,7 @@ class OpenAICompatibleStructuredOutputProvider:
 
     @staticmethod
     def _join_text_fragments(content: List[Dict[str, Any]]) -> str:
-        """Join text fragments from content arrays returned by compatible providers."""
+        """호환 공급자가 배열로 돌려준 텍스트 조각을 하나의 문자열로 합칩니다."""
 
         fragments: List[str] = []
         for item in content:

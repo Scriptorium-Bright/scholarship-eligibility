@@ -1,4 +1,4 @@
-"""Repositories package."""
+"""repository 계층 패키지입니다."""
 
 from app.repositories.document_repository import CanonicalDocumentRepository
 from app.repositories.notice_repository import ScholarshipNoticeRepository

@@ -15,7 +15,7 @@ from app.schemas import LLMExtractionEvidence, LLMExtractionQualification
 
 
 class LLMScholarshipRuleExtractor(StructuredRuleExtractor):
-    """Convert LLM structured output into the shared scholarship rule contract."""
+    """LLM의 구조화 출력을 공용 장학 규정 계약 형태로 변환하는 추출기입니다."""
 
     def __init__(
         self,
@@ -23,6 +23,11 @@ class LLMScholarshipRuleExtractor(StructuredRuleExtractor):
         provider: StructuredOutputProvider,
         prompt_builder: Optional[NoticeExtractionPromptBuilder] = None,
     ):
+        """
+        외부 provider와 prompt builder를 조합해 LLM 기반 추출기를 구성합니다.
+        phase 8.4에서는 이 조합을 통해 heuristic extractor와 같은 contract를 맞추는 것이 핵심입니다.
+        """
+
         self._provider = provider
         self._prompt_builder = prompt_builder or NoticeExtractionPromptBuilder()
 
@@ -34,7 +39,7 @@ class LLMScholarshipRuleExtractor(StructuredRuleExtractor):
         application_ended_at: Optional[datetime] = None,
         fallback_summary: Optional[str] = None,
     ) -> ExtractedScholarshipRule:
-        """Build one prompt, call the provider, and map the response back to rule + provenance."""
+        """프롬프트를 만들고 공급자를 호출한 뒤 결과를 규정과 근거로 되돌립니다."""
 
         prompt_context = self._prompt_builder.build_notice_context(
             notice_title=notice_title,
@@ -82,7 +87,7 @@ class LLMScholarshipRuleExtractor(StructuredRuleExtractor):
         block_lookup: Dict[tuple[int, str], ExtractionPromptBlock],
         index: int,
     ) -> ExtractedProvenanceAnchor:
-        """Validate one evidence pointer against selected blocks and map it to provenance storage."""
+        """evidence가 선택된 block과 맞는지 검증하고 provenance 저장 형태로 바꿉니다."""
 
         lookup_key = (evidence.document_id, evidence.block_id)
         block = block_lookup.get(lookup_key)
@@ -109,7 +114,7 @@ class LLMScholarshipRuleExtractor(StructuredRuleExtractor):
         )
 
     def _build_qualification(self, qualification: LLMExtractionQualification) -> Dict[str, object]:
-        """Drop empty values so downstream decision logic sees the same compact qualification shape."""
+        """빈 값을 제거해 downstream 판정 로직이 쓰는 compact qualification 형태로 만듭니다."""
 
         qualification_payload = qualification.model_dump(exclude_none=True)
         return {

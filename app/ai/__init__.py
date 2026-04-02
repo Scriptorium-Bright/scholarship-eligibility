@@ -1,1 +1,1 @@
-"""AI-related provider and integration modules."""
+"""AI 관련 공급자와 통합 모듈을 담는 패키지입니다."""

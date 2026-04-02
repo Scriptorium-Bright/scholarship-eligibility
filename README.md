@@ -223,6 +223,7 @@ gs/        job/application reference materials kept outside product scope
 - Overview: [docs/project-overview.md](docs/project-overview.md)
 - Requirements: [docs/requirements-analysis.md](docs/requirements-analysis.md)
 - System architecture: [docs/system-architecture.md](docs/system-architecture.md)
+- LLM extraction FAQ: [docs/llm-extraction-faq.md](docs/llm-extraction-faq.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
 - Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.4.md](docs/phase-8.4.md)

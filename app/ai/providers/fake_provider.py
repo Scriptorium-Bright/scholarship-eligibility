@@ -6,24 +6,29 @@ from app.schemas import LLMExtractionResponse
 
 
 class FakeStructuredOutputProvider:
-    """Deterministic provider used to test future LLM orchestration without network calls."""
+    """네트워크 호출 없이 향후 LLM 추출 흐름을 검증하기 위한 결정론적 공급자입니다."""
 
     def __init__(self, response_payload: Optional[Dict[str, Any]] = None):
+        """
+        테스트에서 재사용할 고정 structured output을 미리 검증해 보관합니다.
+        필요하면 호출자가 payload를 주입해 다양한 extraction 케이스를 흉내 낼 수 있게 합니다.
+        """
+
         self._response = LLMExtractionResponse.model_validate(response_payload or self._default_payload())
         self.recorded_prompts: List[str] = []
 
     def extract_rule(self, *, prompt_text: str) -> LLMExtractionResponse:
-        """Return a stable schema-valid payload and keep the latest prompt for assertions."""
+        """항상 같은 스키마 유효 payload를 반환하고, 검증용으로 프롬프트를 기록합니다."""
 
         self.recorded_prompts.append(prompt_text)
         return self._response.model_copy(deep=True)
 
     def close(self) -> None:
-        """Fake provider does not own external resources, so close is a no-op."""
+        """fake provider는 외부 리소스를 소유하지 않으므로 close는 아무 동작도 하지 않습니다."""
 
     @staticmethod
     def _default_payload() -> Dict[str, Any]:
-        """Provide one minimal but schema-valid extraction response for baseline tests."""
+        """baseline 테스트에 사용할 최소한의 스키마 유효 응답을 제공합니다."""
 
         return {
             "scholarship_name": "테스트 장학금",

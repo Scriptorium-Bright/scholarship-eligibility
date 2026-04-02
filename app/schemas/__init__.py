@@ -1,4 +1,4 @@
-"""Schemas package."""
+"""스키마 패키지입니다."""
 
 from app.schemas.domain import (
     CanonicalBlock,

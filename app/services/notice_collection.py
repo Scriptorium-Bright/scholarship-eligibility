@@ -17,7 +17,7 @@ from app.storage import LocalRawStorage
 
 
 class NoticeCollectionService:
-    """Collect notice metadata from configured JBNU boards and persist it."""
+    """설정된 전북대 게시판에서 공지 메타데이터를 수집해 적재하는 서비스입니다."""
 
     def __init__(
         self,

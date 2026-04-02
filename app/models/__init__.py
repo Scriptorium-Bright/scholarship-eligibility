@@ -1,4 +1,4 @@
-"""ORM models package."""
+"""ORM 모델 패키지입니다."""
 
 from app.models.common import DocumentKind, RuleStatus
 from app.models.document import CanonicalDocument, ProvenanceAnchor

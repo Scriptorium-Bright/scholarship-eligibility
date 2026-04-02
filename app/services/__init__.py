@@ -1,4 +1,4 @@
-"""Services package."""
+"""서비스 계층 패키지입니다."""
 
 from app.services.attachment_normalization import AttachmentNormalizationService
 from app.services.eligibility import ScholarshipEligibilityService

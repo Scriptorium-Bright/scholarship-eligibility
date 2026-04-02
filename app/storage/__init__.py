@@ -1,4 +1,4 @@
-"""Storage adapters for raw notice and attachment payloads."""
+"""원시 공지와 첨부 payload를 다루는 저장소 어댑터 패키지입니다."""
 
 from app.storage.local_raw_storage import LocalRawStorage
 

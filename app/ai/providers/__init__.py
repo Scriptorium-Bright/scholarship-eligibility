@@ -1,4 +1,4 @@
-"""Structured output provider implementations used by future LLM extraction phases."""
+"""향후 LLM 추출 단계에서 사용할 구조화 출력 공급자 구현 모음입니다."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from app.core.config import Settings, get_settings
 
 
 def build_structured_output_provider(settings: Optional[Settings] = None) -> StructuredOutputProvider:
-    """Build one provider implementation from application settings."""
+    """애플리케이션 설정값을 기준으로 사용할 공급자 구현체를 생성합니다."""
 
     active_settings = settings or get_settings()
     if active_settings.llm_provider == "fake":

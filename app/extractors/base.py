@@ -9,7 +9,7 @@ from app.models import RuleStatus
 
 @dataclass(frozen=True)
 class ExtractedProvenanceAnchor:
-    """Structured provenance candidate produced by any extraction backend."""
+    """어떤 추출기 구현체든 공통으로 만드는 구조화 근거 후보입니다."""
 
     document_id: int
     anchor_key: str
@@ -21,7 +21,7 @@ class ExtractedProvenanceAnchor:
 
 @dataclass(frozen=True)
 class ExtractedScholarshipRule:
-    """Structured scholarship rule contract shared by heuristic and LLM extractors."""
+    """heuristic과 LLM 추출기가 함께 쓰는 구조화 장학 규정 계약입니다."""
 
     scholarship_name: str
     qualification: Dict[str, object]
@@ -35,7 +35,7 @@ class ExtractedScholarshipRule:
 
 @runtime_checkable
 class StructuredRuleExtractor(Protocol):
-    """Common extraction contract that phase 8 implementations must satisfy."""
+    """phase 8 구현체들이 공통으로 만족해야 하는 추출 계약입니다."""
 
     def extract_notice_rule(
         self,
@@ -45,5 +45,4 @@ class StructuredRuleExtractor(Protocol):
         application_ended_at: Optional[datetime] = None,
         fallback_summary: Optional[str] = None,
     ) -> ExtractedScholarshipRule:
-        """Extract one structured scholarship rule from canonical notice documents."""
-
+        """정규화 공지 문서 집합에서 구조화된 장학 규정 한 건을 추출합니다."""

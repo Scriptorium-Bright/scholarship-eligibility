@@ -1,1 +1,1 @@
-"""Application package for JBNU scholarship eligibility system."""
+"""전북대 장학금 지원 가능 여부 시스템의 애플리케이션 패키지입니다."""

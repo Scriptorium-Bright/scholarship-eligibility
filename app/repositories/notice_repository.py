@@ -10,9 +10,14 @@ from app.schemas import NoticeAttachmentUpsert, ScholarshipNoticeUpsert
 
 
 class ScholarshipNoticeRepository:
-    """Persist and query collected notice metadata."""
+    """수집된 공지 메타데이터를 저장하고 조회하는 repository입니다."""
 
     def __init__(self, session: Session):
+        """
+        수집 공지와 첨부 메타데이터를 다루는 repository를 현재 세션에 묶습니다.
+        collector와 API 계층이 같은 세션 경계 안에서 notice upsert를 재사용하게 합니다.
+        """
+
         self.session = session
 
     def get_by_source_identity(

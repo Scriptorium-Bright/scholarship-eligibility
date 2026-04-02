@@ -13,7 +13,7 @@ from app.models import RuleStatus
 
 
 class HeuristicScholarshipRuleExtractor(StructuredRuleExtractor):
-    """Extract one scholarship rule from canonical documents using regex heuristics."""
+    """정규식 기반 휴리스틱으로 canonical document에서 장학 규정 한 건을 추출합니다."""
 
     _GPA_PATTERN = re.compile(r"(?:평점|평균평점|성적).{0,12}?([0-4]\.\d{1,2})\s*이상")
     _INCOME_PATTERN = re.compile(r"소득(?:분위|구간)\s*(\d+)\s*(?:분위|구간)\s*이하")

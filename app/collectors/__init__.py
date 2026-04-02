@@ -1,4 +1,4 @@
-"""Collector package for external notice board ingestion."""
+"""외부 공지 게시판 수집 로직을 담는 collector 패키지입니다."""
 
 from app.collectors.sources import (
     DEFAULT_COLLECTOR_SOURCES,

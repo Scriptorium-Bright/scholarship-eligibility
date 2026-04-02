@@ -10,9 +10,14 @@ from app.schemas import CanonicalDocumentUpsert, ProvenanceAnchorCreate
 
 
 class CanonicalDocumentRepository:
-    """Persist canonical text documents and provenance anchors."""
+    """canonical 문서와 provenance anchor를 저장하고 조회하는 repository입니다."""
 
     def __init__(self, session: Session):
+        """
+        정규화 문서와 provenance anchor를 다루는 세션 바운드 repository를 초기화합니다.
+        호출부가 같은 트랜잭션 안에서 문서 저장과 앵커 교체를 이어서 수행할 수 있게 합니다.
+        """
+
         self.session = session
 
     def get_document(

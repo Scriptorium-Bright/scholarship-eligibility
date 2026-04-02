@@ -8,7 +8,7 @@ from app.core.config import get_settings
 
 
 class LocalRawStorage:
-    """Store raw notice HTML and attachment bytes on the local filesystem."""
+    """원시 공지 HTML과 첨부 바이트를 로컬 파일 시스템에 저장하는 어댑터입니다."""
 
     def __init__(self, base_path: Optional[str] = None):
         """

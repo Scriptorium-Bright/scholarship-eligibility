@@ -1,4 +1,4 @@
-"""Normalizers that convert raw notice payloads into canonical documents."""
+"""원시 공지 데이터를 canonical document로 바꾸는 normalizer 모음입니다."""
 
 from app.normalizers.attachments import (
     AttachmentDocumentNormalizer,

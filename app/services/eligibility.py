@@ -15,7 +15,7 @@ from app.services.search import ScholarshipSearchService
 
 
 class EligibilityDecisionEngine:
-    """Compare one scholarship rule read model against one student profile."""
+    """장학 규정 한 건과 학생 프로필 한 건을 비교해 판정 결과를 계산합니다."""
 
     def evaluate(
         self,
@@ -222,7 +222,7 @@ class EligibilityDecisionEngine:
 
 
 class EligibilityAnswerBuilder:
-    """Build a short deterministic explanation for one eligibility decision."""
+    """장학금 판정 결과에 대한 짧고 결정론적인 설명 문장을 만듭니다."""
 
     def build(
         self,
@@ -268,7 +268,7 @@ class EligibilityAnswerBuilder:
 
 
 class ScholarshipEligibilityService:
-    """Evaluate a student profile against scholarship rules and build answers."""
+    """학생 프로필을 장학 규정과 대조해 판정 결과 응답을 만드는 서비스입니다."""
 
     def __init__(
         self,
@@ -277,6 +277,11 @@ class ScholarshipEligibilityService:
         decision_engine: Optional[EligibilityDecisionEngine] = None,
         answer_builder: Optional[EligibilityAnswerBuilder] = None,
     ):
+        """
+        검색, 판정, 응답 조립 컴포넌트를 하나의 서비스로 묶어 초기화합니다.
+        테스트에서는 각 구성요소를 주입해 decision path를 독립적으로 검증할 수 있게 합니다.
+        """
+
         self.search_service = search_service or ScholarshipSearchService()
         self.decision_engine = decision_engine or EligibilityDecisionEngine()
         self.answer_builder = answer_builder or EligibilityAnswerBuilder()

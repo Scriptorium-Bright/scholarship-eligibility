@@ -4,7 +4,7 @@ import httpx
 
 
 class HttpTextFetcher:
-    """Fetch HTML text over HTTP for production collector runs."""
+    """운영 수집 경로에서 HTTP로 HTML 텍스트와 바이너리를 가져오는 fetcher입니다."""
 
     def __init__(self, timeout_seconds: float = 10.0):
         """

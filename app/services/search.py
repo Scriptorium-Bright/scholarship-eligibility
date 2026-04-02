@@ -19,7 +19,7 @@ TOKEN_PATTERN = re.compile(r"[0-9A-Za-z가-힣]+")
 
 
 class ScholarshipSearchService:
-    """Assemble scholarship search and open-list responses from stored rules."""
+    """저장된 장학 규정으로 검색 결과와 오픈 목록 응답을 조립하는 서비스입니다."""
 
     def list_published_scholarships(
         self,

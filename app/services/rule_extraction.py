@@ -17,7 +17,7 @@ from app.schemas import ProvenanceAnchorCreate, ScholarshipRuleCreate
 
 
 class ScholarshipRuleExtractionService:
-    """Extract structured scholarship rules and provenance from canonical documents."""
+    """canonical document에서 구조화된 장학 규정과 근거를 추출하는 서비스입니다."""
 
     def __init__(
         self,
@@ -95,7 +95,7 @@ class ScholarshipRuleExtractionService:
             return saved_rules
 
     def _build_default_extractor(self, settings: Settings) -> StructuredRuleExtractor:
-        """Build the extractor implementation selected by application settings."""
+        """애플리케이션 설정에 따라 기본 추출기 구현체를 선택해 생성합니다."""
 
         if settings.extractor_mode == "heuristic":
             return HeuristicScholarshipRuleExtractor()

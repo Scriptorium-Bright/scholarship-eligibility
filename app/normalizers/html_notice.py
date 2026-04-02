@@ -19,7 +19,7 @@ def _clean_text(text: str) -> str:
 
 
 class HtmlNoticeNormalizer:
-    """Convert stored raw notice HTML into canonical block documents."""
+    """저장된 원시 공지 HTML을 canonical block 문서로 변환합니다."""
 
     def normalize_notice_html(
         self,

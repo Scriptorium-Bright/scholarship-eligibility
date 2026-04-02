@@ -12,7 +12,7 @@ from app.storage import LocalRawStorage
 
 
 class AttachmentNormalizationService:
-    """Read stored attachment binaries and persist canonical attachment documents."""
+    """저장된 첨부 바이너리를 읽어 canonical attachment 문서로 적재하는 서비스입니다."""
 
     def __init__(
         self,

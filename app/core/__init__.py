@@ -1,1 +1,1 @@
-"""Core configuration and utilities."""
+"""코어 설정과 공용 유틸리티를 담는 패키지입니다."""

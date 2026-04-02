@@ -4,10 +4,33 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Iterable, List, Optional, Sequence, Tuple
 
+"""
+Evidence Mapping
+LLM이 뱉은 근거 정보(evidence)를 우리 시스템의 근거 저장 형식(provenance anchor)으로 바꾸는 과정
+
+  - field_name = qualification.gpa_min
+  - document_id = 12
+  - block_id = notice-block-2
+  - quote_text = 직전학기 평점평균 3.20 이상
+
+  이걸 그대로 쓰는 게 아니라, 우리 시스템에서는 이걸
+
+  - 어떤 규정 필드의 근거인지
+  - 실제 canonical block과 맞는지
+  - 어떤 anchor key로 저장할지
+    정리해서 provenance anchor 형태로 바꿔 저장한다.
+    
+  1. LLM이 evidence 반환
+  2. 그 document_id, block_id가 실제 문서 block에 존재하는지 확인
+  3. 맞으면 anchor key 생성
+  4. ExtractedProvenanceAnchor로 변환
+  5. 나중에 DB의 provenance anchor로 저장    
+
+"""
 
 @dataclass(frozen=True)
 class ExtractionPromptBlock:
-    """One canonical block serialized with enough metadata for future evidence mapping."""
+    """향후 evidence 매핑에 필요한 메타데이터를 담은 canonical block 표현입니다."""
 
     document_id: int
     source_label: str
@@ -19,7 +42,7 @@ class ExtractionPromptBlock:
 
 @dataclass(frozen=True)
 class NoticeExtractionContext:
-    """Prompt payload prepared for one extraction call."""
+    """한 번의 추출 호출에 사용할 프롬프트 payload입니다."""
 
     prompt_text: str
     selected_blocks: List[ExtractionPromptBlock]
@@ -27,9 +50,17 @@ class NoticeExtractionContext:
 
 
 class NoticeExtractionPromptBuilder:
-    """Build deterministic LLM extraction context from normalized notice documents."""
+    """정규화 문서로부터 결정론적인 LLM 추출 컨텍스트를 만드는 빌더입니다."""
+
+    """LLM이 canonical document 객체를 직접 해석하는 게 아니라, 
+    우리가 직렬화한 canonical 문맥을 보고 schema에 맞게 구조화해 반환하는 방식"""
 
     def __init__(self, *, max_characters: int = 6000):
+        """
+        한 번의 추출 요청에 포함할 최대 문자 수 예산을 초기화합니다.
+        이후 block truncation은 이 값 기준으로 안정적으로 잘리도록 동작합니다.
+        """
+
         self.max_characters = max_characters
 
     def build_notice_context(
@@ -41,7 +72,7 @@ class NoticeExtractionPromptBuilder:
         application_started_at: Optional[datetime] = None,
         application_ended_at: Optional[datetime] = None,
     ) -> NoticeExtractionContext:
-        """Assemble notice metadata and canonical blocks into one extraction prompt."""
+        """공지 메타데이터와 canonical block을 하나의 추출 프롬프트로 조립합니다."""
 
         flattened_blocks = self._flatten_documents(canonical_documents)
         selected_blocks, truncated = self.truncate_blocks(flattened_blocks)
@@ -76,7 +107,7 @@ class NoticeExtractionPromptBuilder:
         )
 
     def serialize_block(self, block: ExtractionPromptBlock) -> str:
-        """Serialize one canonical block so the model can cite it back by document and block id."""
+        """모델이 document id와 block id로 다시 인용할 수 있게 block을 직렬화합니다."""
 
         parts = [
             "[document_id={0}]".format(block.document_id),
@@ -92,7 +123,7 @@ class NoticeExtractionPromptBuilder:
         self,
         blocks: Sequence[ExtractionPromptBlock],
     ) -> Tuple[List[ExtractionPromptBlock], bool]:
-        """Keep blocks in source order while enforcing a deterministic character budget."""
+        """source 순서를 유지한 채 결정론적인 문자 예산 제한을 적용합니다."""
 
         if not blocks:
             return [], False
@@ -118,7 +149,7 @@ class NoticeExtractionPromptBuilder:
         return selected, truncated
 
     def _flatten_documents(self, canonical_documents: Iterable[object]) -> List[ExtractionPromptBlock]:
-        """Flatten notice and attachment documents into one ordered prompt block list."""
+        """notice와 attachment 문서를 하나의 순서 있는 prompt block 목록으로 펼칩니다."""
 
         flattened_blocks: List[ExtractionPromptBlock] = []
         for document in canonical_documents:
@@ -137,4 +168,3 @@ class NoticeExtractionPromptBuilder:
                     )
                 )
         return flattened_blocks
-
