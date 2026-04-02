@@ -81,6 +81,16 @@ class ScholarshipRagChunkRepository:
         self.session.flush()
         return int(result.rowcount or 0)
 
+    def replace_chunks_for_notice(
+        self,
+        notice_id: int,
+        payloads: Sequence[ScholarshipRagChunkUpsert],
+    ) -> List[ScholarshipRagChunk]:
+        """notice 단위 재색인 시 기존 chunk를 비우고 새 payload로 통째 교체합니다."""
+
+        self.delete_by_notice_ids([notice_id])
+        return self.upsert_chunks(payloads)
+
     def list_chunks_for_notice(self, notice_id: int) -> List[ScholarshipRagChunk]:
         """단일 notice에 속한 RAG corpus row를 안정적인 순서로 반환합니다."""
 

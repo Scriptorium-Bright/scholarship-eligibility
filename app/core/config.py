@@ -5,6 +5,7 @@ from pydantic import Field
 
 ExtractorMode = Literal["heuristic", "llm", "hybrid"]
 LLMProviderName = Literal["openai_compatible", "fake"]
+EmbeddingProviderName = Literal["openai_compatible", "fake"]
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -28,6 +29,11 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = 30.0
     llm_retry_attempts: int = Field(default=2, ge=1)
     llm_max_context_characters: int = 6000
+    embedding_provider: EmbeddingProviderName = "fake"
+    embedding_api_base_url: str = "https://api.openai.com/v1"
+    embedding_api_key: Optional[str] = None
+    embedding_model: str = "text-embedding-3-small"
+    embedding_timeout_seconds: float = 30.0
 
     model_config = SettingsConfigDict(
         env_prefix="JBNU_",

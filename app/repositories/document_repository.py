@@ -46,11 +46,29 @@ class CanonicalDocumentRepository:
         항상 예측 가능하도록 본문이 먼저 오고, 첨부파일들은 ID 순서대로 안정적으로 처리하게 정렬합니다.
         """
 
+        return self.list_documents_for_notice_with_anchors(
+            notice_id,
+            include_provenance_anchors=False,
+        )
+
+    def list_documents_for_notice_with_anchors(
+        self,
+        notice_id: int,
+        *,
+        include_provenance_anchors: bool = True,
+    ) -> List[CanonicalDocument]:
+        """
+        단일 notice에 속한 canonical document를 anchor preload 여부와 함께 반환합니다.
+        RAG indexing처럼 block와 provenance를 같이 읽어야 하는 경로에서 N+1을 줄이기 위한 확장 entrypoint입니다.
+        """
+
         statement = (
             select(CanonicalDocument)
             .where(CanonicalDocument.notice_id == notice_id)
             .order_by(CanonicalDocument.attachment_id.is_not(None), CanonicalDocument.id.asc())
         )
+        if include_provenance_anchors:
+            statement = statement.options(selectinload(CanonicalDocument.provenance_anchors))
         return list(self.session.scalars(statement))
 
     def upsert_document(self, payload: CanonicalDocumentUpsert) -> CanonicalDocument:

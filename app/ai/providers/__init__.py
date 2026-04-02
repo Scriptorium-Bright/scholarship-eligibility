@@ -10,6 +10,14 @@ from app.ai.providers.base import (
     StructuredOutputProviderResponseError,
     StructuredOutputProviderTransportError,
 )
+from app.ai.providers.embedding_base import (
+    EmbeddingProvider,
+    EmbeddingProviderError,
+    EmbeddingProviderResponseError,
+    EmbeddingProviderTransportError,
+)
+from app.ai.providers.embedding_fake_provider import FakeEmbeddingProvider
+from app.ai.providers.embedding_openai_provider import OpenAICompatibleEmbeddingProvider
 from app.ai.providers.fake_provider import FakeStructuredOutputProvider
 from app.ai.providers.openai_provider import OpenAICompatibleStructuredOutputProvider
 from app.core.config import Settings, get_settings
@@ -32,12 +40,37 @@ def build_structured_output_provider(settings: Optional[Settings] = None) -> Str
     raise ValueError("Unsupported LLM provider: {0}".format(active_settings.llm_provider))
 
 
+def build_embedding_provider(settings: Optional[Settings] = None) -> EmbeddingProvider:
+    """애플리케이션 설정값을 기준으로 사용할 임베딩 공급자 구현체를 생성합니다."""
+
+    active_settings = settings or get_settings()
+    if active_settings.embedding_provider == "fake":
+        return FakeEmbeddingProvider()
+    if active_settings.embedding_provider == "openai_compatible":
+        return OpenAICompatibleEmbeddingProvider(
+            base_url=active_settings.embedding_api_base_url,
+            api_key=active_settings.embedding_api_key,
+            model=active_settings.embedding_model,
+            timeout_seconds=active_settings.embedding_timeout_seconds,
+        )
+    raise ValueError(
+        "Unsupported embedding provider: {0}".format(active_settings.embedding_provider)
+    )
+
+
 __all__ = [
+    "EmbeddingProvider",
+    "EmbeddingProviderError",
+    "EmbeddingProviderResponseError",
+    "EmbeddingProviderTransportError",
+    "FakeEmbeddingProvider",
     "FakeStructuredOutputProvider",
+    "OpenAICompatibleEmbeddingProvider",
     "OpenAICompatibleStructuredOutputProvider",
     "StructuredOutputProvider",
     "StructuredOutputProviderError",
     "StructuredOutputProviderResponseError",
     "StructuredOutputProviderTransportError",
+    "build_embedding_provider",
     "build_structured_output_provider",
 ]
