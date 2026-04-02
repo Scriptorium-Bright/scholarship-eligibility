@@ -20,6 +20,7 @@ from app.schemas.llm_extraction import (
     LLMExtractionQualification,
     LLMExtractionResponse,
 )
+from app.schemas.rag import RagRetrievalCandidate, ScholarshipRagChunkUpsert
 from app.schemas.search import (
     OpenScholarshipListResponse,
     ScholarshipProvenanceAnchorResponse,
@@ -38,9 +39,11 @@ __all__ = [
     "NoticeAttachmentUpsert",
     "OpenScholarshipListResponse",
     "ProvenanceAnchorCreate",
+    "RagRetrievalCandidate",
     "ScholarshipEligibilityItem",
     "ScholarshipEligibilityResponse",
     "ScholarshipProvenanceAnchorResponse",
+    "ScholarshipRagChunkUpsert",
     "ScholarshipNoticeUpsert",
     "ScholarshipRuleCreate",
     "ScholarshipSearchItem",

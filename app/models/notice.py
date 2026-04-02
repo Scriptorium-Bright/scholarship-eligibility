@@ -61,6 +61,10 @@ class ScholarshipNotice(TimestampMixin, Base):
         back_populates="notice",
         cascade="all, delete-orphan",
     )
+    rag_chunks: Mapped[List["ScholarshipRagChunk"]] = relationship(
+        back_populates="notice",
+        cascade="all, delete-orphan",
+    )
 
 
 class NoticeAttachment(TimestampMixin, Base):
@@ -96,4 +100,5 @@ class NoticeAttachment(TimestampMixin, Base):
 
 if TYPE_CHECKING:
     from app.models.document import CanonicalDocument
+    from app.models.rag_chunk import ScholarshipRagChunk
     from app.models.rule import ScholarshipRule

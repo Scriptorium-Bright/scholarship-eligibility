@@ -64,7 +64,9 @@ class ScholarshipRule(TimestampMixin, Base):
 
     notice: Mapped["ScholarshipNotice"] = relationship(back_populates="scholarship_rules")
     document: Mapped[Optional["CanonicalDocument"]] = relationship(back_populates="scholarship_rules")
+    rag_chunks: Mapped[List["ScholarshipRagChunk"]] = relationship(back_populates="rule")
 
 if TYPE_CHECKING:
     from app.models.document import CanonicalDocument
     from app.models.notice import ScholarshipNotice
+    from app.models.rag_chunk import ScholarshipRagChunk

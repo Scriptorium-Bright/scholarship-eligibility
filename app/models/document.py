@@ -62,6 +62,10 @@ class CanonicalDocument(TimestampMixin, Base):
     scholarship_rules: Mapped[List["ScholarshipRule"]] = relationship(
         back_populates="document",
     )
+    rag_chunks: Mapped[List["ScholarshipRagChunk"]] = relationship(
+        back_populates="document",
+        cascade="all, delete-orphan",
+    )
 
 
 class ProvenanceAnchor(TimestampMixin, Base):
@@ -98,4 +102,5 @@ class ProvenanceAnchor(TimestampMixin, Base):
 
 if TYPE_CHECKING:
     from app.models.notice import NoticeAttachment, ScholarshipNotice
+    from app.models.rag_chunk import ScholarshipRagChunk
     from app.models.rule import ScholarshipRule
