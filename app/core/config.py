@@ -1,4 +1,8 @@
 from functools import lru_cache
+from typing import Literal, Optional
+
+ExtractorMode = Literal["heuristic", "llm", "hybrid"]
+LLMProviderName = Literal["openai_compatible", "fake"]
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -14,6 +18,13 @@ class Settings(BaseSettings):
     api_prefix: str = "/api/v1"
     database_url: str = "postgresql+psycopg://jbnu:jbnu@localhost:54329/jbnu_scholarship"
     raw_storage_path: str = "./data/raw"
+    extractor_mode: ExtractorMode = "heuristic"
+    llm_provider: LLMProviderName = "openai_compatible"
+    llm_api_base_url: str = "https://api.openai.com/v1"
+    llm_api_key: Optional[str] = None
+    llm_model: str = "gpt-4.1-mini"
+    llm_timeout_seconds: float = 30.0
+    llm_max_context_characters: int = 6000
 
     model_config = SettingsConfigDict(
         env_prefix="JBNU_",

@@ -1,0 +1,42 @@
+"""Structured output provider implementations used by future LLM extraction phases."""
+
+from __future__ import annotations
+
+from typing import Optional
+
+from app.ai.providers.base import (
+    StructuredOutputProvider,
+    StructuredOutputProviderError,
+    StructuredOutputProviderResponseError,
+    StructuredOutputProviderTransportError,
+)
+from app.ai.providers.fake_provider import FakeStructuredOutputProvider
+from app.ai.providers.openai_provider import OpenAICompatibleStructuredOutputProvider
+from app.core.config import Settings, get_settings
+
+
+def build_structured_output_provider(settings: Optional[Settings] = None) -> StructuredOutputProvider:
+    """Build one provider implementation from application settings."""
+
+    active_settings = settings or get_settings()
+    if active_settings.llm_provider == "fake":
+        return FakeStructuredOutputProvider()
+    if active_settings.llm_provider == "openai_compatible":
+        return OpenAICompatibleStructuredOutputProvider(
+            base_url=active_settings.llm_api_base_url,
+            api_key=active_settings.llm_api_key,
+            model=active_settings.llm_model,
+            timeout_seconds=active_settings.llm_timeout_seconds,
+        )
+    raise ValueError("Unsupported LLM provider: {0}".format(active_settings.llm_provider))
+
+
+__all__ = [
+    "FakeStructuredOutputProvider",
+    "OpenAICompatibleStructuredOutputProvider",
+    "StructuredOutputProvider",
+    "StructuredOutputProviderError",
+    "StructuredOutputProviderResponseError",
+    "StructuredOutputProviderTransportError",
+    "build_structured_output_provider",
+]
