@@ -189,6 +189,10 @@ pytest
 - Phase 5.x: structured rule extraction, provenance persistence
 - Phase 6.x: search/open scholarship APIs
 - Phase 7.x: eligibility engine, explanation builder, eligibility API
+- Phase 8.0: extractor contract 분리
+- Phase 8.1: LLM extraction schema와 evidence contract
+- Phase 8.2: extraction prompt/context builder
+- Phase 8.3: OpenAI-compatible provider, fake provider, config baseline
 
 진행 이력은 [docs/implementation-plan.md](docs/implementation-plan.md)과 각 `docs/phase-n.x.md` 문서에 남겨두었다.
 
@@ -220,4 +224,4 @@ gs/        job/application reference materials kept outside product scope
 - System architecture: [docs/system-architecture.md](docs/system-architecture.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
-- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-7.1.md](docs/phase-7.1.md)
+- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.3.md](docs/phase-8.3.md)
