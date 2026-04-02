@@ -193,6 +193,7 @@ pytest
 - Phase 8.1: LLM extraction schema와 evidence contract
 - Phase 8.2: extraction prompt/context builder
 - Phase 8.3: OpenAI-compatible provider, fake provider, config baseline
+- Phase 8.4: LLM extractor integration baseline
 
 진행 이력은 [docs/implementation-plan.md](docs/implementation-plan.md)과 각 `docs/phase-n.x.md` 문서에 남겨두었다.
 
@@ -204,7 +205,7 @@ pytest
 
 ## Current Limits
 - search는 아직 semantic embedding 없이 lexical scoring 중심이다.
-- rule extractor는 heuristic 기반이라 복수 규정 공지와 예외 조항 표현력이 제한적이다.
+- LLM structured extraction path는 baseline 통합까지 완료됐지만, hybrid fallback, retry, evaluation set은 아직 남아 있다.
 - eligibility qualification schema는 현재 핵심 필드 중심이다.
 
 ## Repository Layout
@@ -224,4 +225,4 @@ gs/        job/application reference materials kept outside product scope
 - System architecture: [docs/system-architecture.md](docs/system-architecture.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
-- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.3.md](docs/phase-8.3.md)
+- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.4.md](docs/phase-8.4.md)
