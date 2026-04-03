@@ -1,9 +1,9 @@
-# JBNU Scholarship Regulation Search & Eligibility Decision System
+# Scholarship Regulation Search & Eligibility Decision System
 
-전북대학교 장학 공지를 자동 수집하고, 원문을 보존형으로 정규화한 뒤, 구조화 규정과 deterministic engine으로 검색과 지원 가능 여부를 제공하는 시스템이다.
+장학 공지를 자동 수집하고, 원문을 보존형으로 정규화한 뒤, 구조화 규정, grounded RAG answer, deterministic engine으로 검색과 지원 가능 여부를 제공하는 시스템이다.
 
 ## Why This Project Exists
-전북대학교 장학 공지는 게시판, HTML 본문, PDF/HWP 첨부로 분산되어 있고 기준도 비정형 문장으로 흩어져 있다. 학생은 여러 공고를 직접 읽으면서 학점, 학년, 학적, 소득분위를 대조해야 하고, 기준이 모호하면 판단이 어렵다.
+장학 공지는 게시판, HTML 본문, PDF/HWP 첨부로 분산되어 있고 기준도 비정형 문장으로 흩어져 있다. 사용자는 여러 공고를 직접 읽으면서 학점, 학년, 학적, 소득분위를 대조해야 하고, 기준이 모호하면 판단이 어렵다.
 
 이 프로젝트는 그 문제를 아래 방식으로 바꾼다.
 - 공식 공지를 자동 수집한다.
@@ -13,11 +13,12 @@
 - 최종 eligibility는 코드 기반 엔진이 `eligible`, `ineligible`, `expired`, `insufficient_info`로 판정한다.
 
 ## What This Project Does
-- 전북대학교 공식 게시판 공지를 수집한다.
+- 장학 관련 공식 공지를 수집한다.
 - HTML 본문과 PDF/HWP attachment를 raw 파일로 저장한다.
 - notice/attachment를 canonical block 구조로 정규화한다.
 - 장학명, 평점, 소득분위, 학년, 학적, 제출서류를 structured rule JSON으로 추출한다.
 - search API와 open scholarship API를 제공한다.
+- citation이 포함된 grounded RAG question/answer API를 제공한다.
 - student profile 기반 eligibility API와 explanation 응답을 제공한다.
 
 ## Why This Is Not a Simple Chatbot
@@ -28,7 +29,7 @@
 
 ## High-Level Architecture
 ```text
-[JBNU Boards]
+[Scholarship Notice Sources]
     |
     v
 [Collectors / Parsers]
@@ -61,7 +62,7 @@
 
 ## How It Works
 ### 1. Collection
-- JBNU 본부/K2Web 게시판에서 장학 관련 공지를 찾는다.
+- 장학 관련 공지 소스에서 게시글과 첨부파일을 수집한다.
 - notice metadata와 attachment metadata를 DB에 저장한다.
 
 ### 2. Raw Preservation
@@ -82,6 +83,12 @@
 - 후보 탐색 단계에서는 provenance를 지연 로딩하고, 최종 응답 item에만 hydrate한다.
 - lexical scoring으로 검색 결과를 정렬한다.
 - 현재 신청 가능한 공고 목록을 계산한다.
+
+### 5.5. Grounded RAG Answer
+- canonical block와 provenance를 RAG corpus로 materialize한다.
+- hybrid retrieval로 top-k 근거를 찾고 prompt context를 조립한다.
+- grounded answer API는 citation과 함께 자연어 답변을 반환한다.
+- 프로필 기반 최종 eligibility 질문은 deterministic endpoint로 guardrail 처리한다.
 
 ### 6. Eligibility
 - student profile과 structured qualification JSON을 직접 비교한다.
@@ -139,6 +146,7 @@
 - `GET /ready`
 - `GET /api/v1/scholarships/search?query=장학금`
 - `GET /api/v1/scholarships/open`
+- `POST /api/v1/scholarships/ask`
 - `POST /api/v1/scholarships/eligibility`
 
 ## Measured Performance
@@ -175,17 +183,13 @@ pytest
 ## Configuration
 기본 환경 변수는 [.env.example](.env.example)에 있다.
 
-- `JBNU_APP_NAME`
-- `JBNU_ENV`
-- `JBNU_LOG_LEVEL`
-- `JBNU_API_PREFIX`
-- `JBNU_DATABASE_URL`
-- `JBNU_RAW_STORAGE_PATH`
-- `JBNU_EXTRACTOR_MODE`
-- `JBNU_LLM_PROVIDER`
-- `JBNU_LLM_TIMEOUT_SECONDS`
-- `JBNU_LLM_RETRY_ATTEMPTS`
-- `JBNU_LLM_MAX_CONTEXT_CHARACTERS`
+주요 설정 범주는 아래와 같다.
+
+- 애플리케이션 이름, 실행 환경, 로그 레벨
+- API prefix와 데이터베이스 연결 정보
+- raw storage 경로
+- extractor mode
+- LLM provider, timeout, retry, context limit
 
 ## Current Implementation Status
 - Phase 1.x: 요구사항, 앱 골격, Docker Compose, PostgreSQL + pgvector 준비
@@ -202,6 +206,11 @@ pytest
 - Phase 8.4: LLM extractor integration baseline
 - Phase 8.5: hybrid fallback, provider retry, extraction ops logging
 - Phase 8.6: gold evaluation set, synthetic benchmark, portfolio metrics
+- Phase 9.0: RAG corpus schema와 retrieval repository
+- Phase 9.1: embedding provider와 indexing pipeline
+- Phase 9.2: hybrid retrieval과 prompt context assembly
+- Phase 9.3: grounded answer API와 citation response
+- Phase 9.4: RAG evaluation, benchmark, portfolio docs
 
 진행 이력은 [docs/implementation-plan.md](docs/implementation-plan.md)과 각 `docs/phase-n.x.md` 문서에 남겨두었다.
 
@@ -211,6 +220,7 @@ pytest
 - search와 eligibility가 같은 structured rule 계층을 재사용한다.
 - provenance anchor를 통해 결과 근거를 추적할 수 있다.
 - heuristic baseline, LLM structured extraction, hybrid fallback을 같은 extractor contract 위에서 비교할 수 있다.
+- canonical block 기반 hybrid retrieval과 grounded citation answer를 같은 데이터 계층 위에서 연결했다.
 
 ## Measured Extraction Evaluation
 - synthetic gold set `4건` 기준
@@ -223,9 +233,21 @@ pytest
   - 이 수치는 local SQLite + fixture-driven fake provider 기준의 synthetic evaluation 결과다.
 
 ## Current Limits
-- search는 아직 semantic embedding 없이 lexical scoring 중심이다.
-- extraction 평가는 synthetic gold set과 fake provider 기준이며, 실제 OpenAI provider 품질 측정은 아직 아니다.
+- search API 자체는 아직 lexical scoring 중심이며, semantic retrieval은 현재 RAG answer path에 우선 적용되어 있다.
+- extraction과 RAG 평가는 synthetic fixture와 fake provider 기준이며, 실제 OpenAI provider 품질 측정은 아직 아니다.
 - eligibility qualification schema는 현재 핵심 필드 중심이다.
+
+## Measured RAG Answer Evaluation
+- synthetic question set `4건` 기준
+- groundedness `100.00%`
+- citation coverage `100.00%`
+- refusal precision `100.00%`
+- avg latency `2.79ms`
+- p95 latency `5.75ms`
+- 핵심 해석:
+  - grounded question `2건` 모두 citation quote 안에서 확인 가능한 문구만 답했다.
+  - no-evidence question과 profile-based decision question을 모두 안전하게 refusal / guardrail 처리했다.
+  - 이 수치는 local SQLite + fixture-driven fake providers 기준의 synthetic evaluation 결과다.
 
 ## Repository Layout
 ```text
@@ -245,4 +267,4 @@ gs/        job/application reference materials kept outside product scope
 - LLM extraction FAQ: [docs/llm-extraction-faq.md](docs/llm-extraction-faq.md)
 - Performance benchmark: [docs/performance-benchmark.md](docs/performance-benchmark.md)
 - Tech stack: [docs/tech-stack.md](docs/tech-stack.md)
-- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-8.6.md](docs/phase-8.6.md)
+- Phase logs: [docs/phase-1.0.md](docs/phase-1.0.md) ~ [docs/phase-9.4.md](docs/phase-9.4.md)
